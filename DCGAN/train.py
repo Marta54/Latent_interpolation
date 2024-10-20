@@ -22,7 +22,15 @@ NUM_EPOCHS = 1000
 VERSION = 1
 DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon_square'
 OUT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\images_pokemon_train\\{VERSION}'
-CHECKPOINT_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models'
+CHECKPOINT_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\{VERSION}'
+
+if not os.path.exists(OUT_FOLDER):
+    # Create the folder if it doesn't exist
+    os.makedirs(OUT_FOLDER)
+
+if not os.path.exists(CHECKPOINT_FOLDER):
+    # Create the folder if it doesn't exist
+    os.makedirs(CHECKPOINT_FOLDER)
 
 transforms = transforms.Compose(
     [
@@ -92,10 +100,7 @@ for epoch in range(NUM_EPOCHS):
                 plt.subplot(1, 2, 2)
                 plt.imshow(img_grid_fake.permute(1, 2, 0).cpu().numpy())
                 plt.title('fake images')
-                if not os.path.exists(OUT_FOLDER):
-                    # Create the folder if it doesn't exist
-                    os.makedirs(OUT_FOLDER)
-                
+                plt.tight_layout()
                 plt.savefig(OUT_FOLDER + f'\\{epoch}_{batch_idx}.png')
                 plt.close()
     if epoch % 50 == 0:
