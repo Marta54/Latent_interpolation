@@ -15,6 +15,7 @@ jpg_files = glob.glob(os.path.join(folder_path, '**', '*.jpg'), recursive=True)
 n = 0
 # Iterate through the found .jpg files
 for jpg_file in jpg_files:
-    make_square(jpg_file, 512).save(f'pokemon_square\\{n}.jpg')
+    make_square(jpg_file, 64).save(f'pokemon_square\\{n}.jpg')
     n+=1
+    break
    
