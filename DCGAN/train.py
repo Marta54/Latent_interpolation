@@ -20,6 +20,7 @@ Z_DIM = 100
 NUM_EPOCHS = 1000
 
 VERSION = 1
+DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon_square'
 OUT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\images_pokemon_train\\{VERSION}'
 CHECKPOINT_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models'
 
@@ -34,7 +35,7 @@ transforms = transforms.Compose(
 )
 
 #dataset = datasets.MNIST(root="dataset/", train = True, transform=transforms, download=True)
-dataset = datasets.ImageFolder(root="C:\\Users\\msro1\\Latent_interpolation\\pokemon_square", transform=transforms)
+dataset = datasets.ImageFolder(root=DATA_FOLDER, transform=transforms)
 
 loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
