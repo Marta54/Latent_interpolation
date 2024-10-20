@@ -1,5 +1,4 @@
 import torch
-import torchvision.utils as vutils
 import numpy as np
 import cv2
 from torch.autograd import Variable
@@ -38,7 +37,7 @@ def interpolate_latents(latent_dim, num_steps=60):
     z_interpolates = [(1 - t) * z_start + t * z_end for t in np.linspace(0, 1, num_steps)]
     return z_interpolates
 
-def generate_images(generator, z_interpolates):
+def generate_images(generator, z_interpolates, DEVICE):
     images = []
     with torch.no_grad():  # No need to compute gradients
         for z in z_interpolates:
@@ -61,7 +60,7 @@ def plot_images(images, num_cols=5):
     plt.tight_layout()  # Adjust subplots to fit into figure area.
     plt.show()  # Display the plot
 
-def create_video(images, video_name='latent_interpolation.mp4', fps=30, super_res = False):
+def create_video(images, video_name='latent_interpolation.mp4', fps=30, super_res = False, device = 'cpu'):
     n = 0
     height = images[0].shape[0] * 4 if super_res else images[0].shape[0]
     width = images[0].shape[1] * 4 if super_res else images[0].shape[1]
@@ -72,7 +71,7 @@ def create_video(images, video_name='latent_interpolation.mp4', fps=30, super_re
         img_numpy = (img_numpy * 255).astype(np.uint8)  # Convert to uint8 format
         
         if super_res:
-            img_numpy = superresolution(img_numpy, DEVICE, scale = 4)
+            img_numpy = superresolution(img_numpy, device, scale = 4)
             if n % 50 == 0:
                 print(f"Super-resolved image {n + 1} of {len(images)}")
             n+=1
@@ -85,46 +84,16 @@ def create_video(images, video_name='latent_interpolation.mp4', fps=30, super_re
 
 def latent_space_interpolation(generator, latent_dim, 
                                num_steps=60, video_name='latent_interpolation.mp4', fps=30, super_res = False,
-                               plot = None):
+                               plot = None, device = 'cpu'):
     # Step 1: Interpolate latent vectors
     z_interpolates = interpolate_latents(latent_dim, num_steps)
 
     # Step 2: Generate images from the latent vectors
-    images = generate_images(generator, z_interpolates)
+    images = generate_images(generator, z_interpolates, device)
 
     # Step 3: Create a video from the generated images
-    create_video(images, video_name=video_name, fps = fps, super_res = super_res)
+    create_video(images, video_name, fps, super_res, device)
 
     if plot:
         plot_images(images, num_cols=5)
 
-# Assuming latent_dim is the dimension of your GAN's latent space, e.g., 100
-LATENT_DIM = 100
-
-VERSION = 1
-MODEL_PATH = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\2\\gen_500.pth'
-VIDEO_NAME = 'latent_space_interpolation.avi'
-
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-FEATURES_GEN = 64
-CHANNELS_IMG = 3
-Z_DIM = 100
-N = 8
-
-SEED = 0
-set_seeds(SEED)
-
-FPS = 5
-NUM_STEPS = 50
-SUPER_RES = False
-PLOT = False
-
-# Load your pre-trained model
-generator = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(DEVICE)
-generator.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
-generator.eval()  # Set to evaluation mode
-
-latent_space_interpolation(generator, LATENT_DIM, 
-                          num_steps=NUM_STEPS, video_name=VIDEO_NAME, fps=FPS, super_res = SUPER_RES,
-                         plot = PLOT)
