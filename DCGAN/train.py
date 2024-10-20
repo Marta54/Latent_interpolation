@@ -8,21 +8,34 @@ from torch.utils.data import DataLoader
 from model import Discriminator, Generator, initialize_weights
 import matplotlib.pyplot as plt
 import os
+import random
 
+def set_seeds(seed_value):
+    # Python's built-in random module
+    random.seed(seed_value)
+    torch.manual_seed(seed_value)  # For CPU
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed_value)  # For current GPU
+        torch.cuda.manual_seed_all(seed_value)  # For all GPUs if using multi-GPU
+    # Ensuring deterministic behavior
+    torch.backends.cudnn.deterministic = True
+
+SEED = 42
+set_seeds(SEED)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 LEARNING_RATE = 2e-4
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 IMAGE_SIZE = FEATURES_DISC = FEATURES_GEN = 64
 
 CHANNELS_IMG = 3
 Z_DIM = 100
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 400
 
 VERSION = 1
 DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon_square'
 OUT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\images_pokemon_train\\{VERSION}'
-CHECKPOINT_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\{VERSION}'
+CHECKPOINT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\{VERSION}'
 
 if not os.path.exists(OUT_FOLDER):
     # Create the folder if it doesn't exist
@@ -85,6 +98,7 @@ for epoch in range(NUM_EPOCHS):
         if batch_idx % 100 == 0:
             print(f"Epoch {epoch+1}/{NUM_EPOCHS}, Batch {batch_idx+1} out of {len(loader)}")
             with torch.no_grad():
+                print("Saving examples")
                 fake = gen(fixed_noise)
                 # take up to 32 examples
                 img_grid_real = torchvision.utils.make_grid(
