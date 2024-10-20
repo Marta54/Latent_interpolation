@@ -35,10 +35,9 @@ def generate_images(generator, z_interpolates):
     with torch.no_grad():  # No need to compute gradients
         for z in z_interpolates:
             z = Variable(z).to(DEVICE)  # Ensure the vector is on CPU
-            fake_image = generator(z).detach().cpu()  # Generate the image
+            fake_image = generator(z)[0].permute(1,2,0).detach().cpu()  # Generate the image
             fake_image = (fake_image + 1) / 2.0  # Convert the images back to range [0, 1] from [-1, 1]
-            fake_image = vutils.make_grid(fake_image, normalize=True, scale_each=True)  # Normalize
-            print(fake_image.shape)
+            #fake_image = vutils.make_grid(fake_image, normalize=True, scale_each=True)  # Normalize
             images.append(fake_image)
     return images
 
@@ -75,11 +74,11 @@ def latent_space_interpolation(generator, latent_dim, num_steps=60, video_name='
     images = generate_images(generator, z_interpolates)
 
     # Step 3: Create a video from the generated images
-    #create_video(images, video_name=video_name, fps = fps)
+    create_video(images, video_name=video_name, fps = fps)
 
     if plot:
         plot_images(images, num_cols=5)
 
 # Assuming latent_dim is the dimension of your GAN's latent space, e.g., 100
 latent_dim = 100
-latent_space_interpolation(generator, latent_dim, num_steps=NUM_STEPS, video_name=VIDEO_NAME, fps=FPS, plot = True)
+latent_space_interpolation(generator, latent_dim, num_steps=NUM_STEPS, video_name=VIDEO_NAME, fps=FPS)
