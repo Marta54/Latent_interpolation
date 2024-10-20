@@ -7,16 +7,29 @@ from model import  Generator
 import matplotlib.pyplot as plt
 
 VERSION = 1
-MODEL_PATH = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\gen_350.pth'
+MODEL_PATH = 'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\gen_500.pth'
 VIDEO_NAME = 'latent_space_interpolation.avi'
-FPS = 15
-NUM_STEPS = 150
+FPS = 30
+NUM_STEPS = 200
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 FEATURES_GEN = 64
 CHANNELS_IMG = 3
 Z_DIM = 100
 N = 8
+
+
+def set_seeds(seed_value):
+    # Python's built-in random module
+    torch.manual_seed(seed_value)  # For CPU
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed_value)  # For current GPU
+        torch.cuda.manual_seed_all(seed_value)  # For all GPUs if using multi-GPU
+    # Ensuring deterministic behavior
+    torch.backends.cudnn.deterministic = True
+
+SEED = 42
+set_seeds(SEED)
 
 # Load your pre-trained model
 generator = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(DEVICE)

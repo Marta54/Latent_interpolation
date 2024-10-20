@@ -32,10 +32,14 @@ CHANNELS_IMG = 3
 Z_DIM = 100
 NUM_EPOCHS = 1000
 
-VERSION = 2
+VERSION = 3
 DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon_square'
 OUT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\images_pokemon_train\\{VERSION}'
 CHECKPOINT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\{VERSION}'
+
+SAVE_FREQ = 20 # number of epochs after which the model and example images are saved
+
+
 
 if not os.path.exists(OUT_FOLDER):
     # Create the folder if it doesn't exist
@@ -97,27 +101,27 @@ for epoch in range(NUM_EPOCHS):
 
         if batch_idx % 100 == 0:
             print(f"Epoch {epoch+1}/{NUM_EPOCHS}, Batch {batch_idx+1} out of {len(loader)}")
-            if epoch % 20 == 0:
-                with torch.no_grad():
-                    print("Saving examples")
-                    fake = gen(fixed_noise)
-                    # take up to 32 examples
-                    img_grid_real = torchvision.utils.make_grid(
-                        real[:32], normalize=True
-                        )
-                    img_grid_fake = torchvision.utils.make_grid(
-                        fake[:32], normalize=True
-                    )
-                    plt.figure(figsize=(10, 5))
-                    plt.subplot(1, 2, 1)
-                    plt.imshow(img_grid_real.permute(1, 2, 0).cpu().numpy())
-                    plt.title('real images')
-                    plt.subplot(1, 2, 2)
-                    plt.imshow(img_grid_fake.permute(1, 2, 0).cpu().numpy())
-                    plt.title('fake images')
-                    plt.tight_layout()
-                    plt.axis('off')
-                    plt.savefig(OUT_FOLDER + f'\\{epoch}_{batch_idx}.png')
-                    plt.close()
-    if epoch % 50 == 0:
+                
+    if epoch % SAVE_FREQ == 0:
         torch.save(gen.state_dict(), CHECKPOINT_FOLDER + f'\\gen_{epoch}.pth')
+        with torch.no_grad():
+            print("Saving examples")
+            fake = gen(fixed_noise)
+            # take up to 32 examples
+            img_grid_real = torchvision.utils.make_grid(
+                real[:32], normalize=True
+                )
+            img_grid_fake = torchvision.utils.make_grid(
+                fake[:32], normalize=True
+            )
+            plt.figure(figsize=(10, 5))
+            plt.subplot(1, 2, 1)
+            plt.imshow(img_grid_real.permute(1, 2, 0).cpu().numpy())
+            plt.title('real images')
+            plt.subplot(1, 2, 2)
+            plt.imshow(img_grid_fake.permute(1, 2, 0).cpu().numpy())
+            plt.title('fake images')
+            plt.tight_layout()
+            plt.axis('off')
+            plt.savefig(OUT_FOLDER + f'\\{epoch}_{batch_idx}.png')
+            plt.close()
