@@ -5,7 +5,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
-from model import Discriminator, Generator, initialize_weights
+from model2 import Discriminator, Generator, initialize_weights
 import matplotlib.pyplot as plt
 import os
 import random
@@ -25,15 +25,15 @@ set_seeds(SEED)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 LEARNING_RATE = 2e-4
-BATCH_SIZE = 128
-IMAGE_SIZE = FEATURES_DISC = FEATURES_GEN = 64
+BATCH_SIZE = 2
+IMAGE_SIZE = FEATURES_DISC = FEATURES_GEN = 552
 
 CHANNELS_IMG = 3
 Z_DIM = 100
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 100
 
-VERSION = 3
-DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon_square'
+VERSION = '4_big'
+DATA_FOLDER = 'C:\\Users\\msro1\\Latent_interpolation\\pokemon552'
 OUT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\images_pokemon_train\\{VERSION}'
 CHECKPOINT_FOLDER = f'C:\\Users\\msro1\\Latent_interpolation\\DCGAN\\pokemon_checkpoints_models\\{VERSION}'
 
@@ -73,7 +73,7 @@ opt_gen = optim.Adam(gen.parameters(), lr = LEARNING_RATE, betas = (0.5, 0.999))
 opt_disc = optim.Adam(disc.parameters(), lr = LEARNING_RATE, betas = (0.5, 0.999))
 criterion = nn.BCELoss()
 
-fixed_noise = torch.randn(32, Z_DIM, 1, 1).to(device)
+fixed_noise = torch.randn(8, Z_DIM, 1, 1).to(device)
 gen.train()
 disc.train()
 
